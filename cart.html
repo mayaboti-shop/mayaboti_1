@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | mayaboti</title>
+    <link rel="stylesheet" href="styl.css">
+</head>
+
+<body>
+
+<div class="cart-container">
+
+    <h1 class="cart-title">🛒 Shopping Cart</h1>
+
+    <p id="cartError" class="form-error" style="display:none;"></p>
+    <p id="cartSuccess" class="form-success" style="display:none;"></p>
+
+    <div class="cart-item" data-price="15.00">
+
+        <div class="product">
+
+            <img src="https://via.placeholder.com/90" alt="">
+
+            <div>
+                <h3>Magic Hair Oil</h3>
+                <p>$15.00</p>
+            </div>
+
+        </div>
+
+        <div class="qty">
+            <button class="minus">-</button>
+            <span class="count">1</span>
+            <button class="plus">+</button>
+        </div>
+
+        <button class="remove">Remove</button>
+
+    </div>
+
+    <div class="cart-item" data-price="12.00">
+
+        <div class="product">
+
+            <img src="https://via.placeholder.com/90" alt="">
+
+            <div>
+                <h3>Saffron Soap</h3>
+                <p>$12.00</p>
+            </div>
+
+        </div>
+
+        <div class="qty">
+            <button class="minus">-</button>
+            <span class="count">2</span>
+            <button class="plus">+</button>
+        </div>
+
+        <button class="remove">Remove</button>
+
+    </div>
+
+    <div class="summary">
+
+        <h2>Order Summary</h2>
+
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <strong>$39.00</strong>
+        </div>
+
+        <div class="summary-row">
+            <span>Shipping</span>
+            <strong>$5.00</strong>
+        </div>
+
+        <hr>
+
+        <div class="summary-row">
+            <h2>Total</h2>
+            <h2>$44.00</h2>
+        </div>
+
+        <button class="checkout" id="checkoutBtn">
+            Proceed to Checkout
+        </button>
+
+    </div>
+
+</div>
+
+<nav class="main-nav">
+    <a href="index.html">HOME</a>
+    <a href="band.html">BRANDS</a>
+    <a href="categories.html">CATEGORIES</a>
+    <a href="cart.html">CART</a>
+    <a href="chat.html">CHAT</a>
+</nav>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="styl.js"></script>
+<script>
+    const cartError = document.getElementById("cartError");
+    const cartSuccess = document.getElementById("cartSuccess");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+
+    checkoutBtn.addEventListener("click", async function () {
+        cartError.style.display = "none";
+        cartSuccess.style.display = "none";
+
+        if (!Auth.isLoggedIn()) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const items = Array.from(document.querySelectorAll(".cart-item")).map((row) => ({
+            name: row.querySelector("h3").textContent,
+            price: parseFloat(row.dataset.price),
+            qty: parseInt(row.querySelector(".count").textContent, 10),
+        }));
+
+        if (!items.length) {
+            cartError.textContent = "Your cart is empty.";
+            cartError.style.display = "block";
+            return;
+        }
+
+        checkoutBtn.disabled = true;
+        checkoutBtn.textContent = "Placing order...";
+
+        try {
+            await Auth.apiFetch("/orders", {
+                method: "POST",
+                body: JSON.stringify({ items }),
+            });
+
+            cartSuccess.textContent = "Order placed successfully!";
+            cartSuccess.style.display = "block";
+        } catch (err) {
+            cartError.textContent = err.message || "Checkout failed. Please try again.";
+            cartError.style.display = "block";
+        } finally {
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = "Proceed to Checkout";
+        }
+    });
+</script>
+</body>
+</html>

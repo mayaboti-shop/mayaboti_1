@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | mayaboti</title>
+    <link rel="stylesheet" href="styl.css">
+</head>
+<body>
+
+<nav class="main-nav">
+    <a href="index.html">HOME</a>
+    <a href="band.html">BRANDS</a>
+    <a href="categories.html">CATEGORIES</a>
+    <a href="cart.html">CART</a>
+    <a href="chat.html">CHAT</a>
+</nav>
+
+<div class="admin-wrap">
+
+    <div class="admin-header">
+        <h1>Admin Dashboard</h1>
+        <button class="btn-logout" id="logoutBtn">Log out</button>
+    </div>
+
+    <p id="adminError" class="form-error" style="display:none;"></p>
+    <p id="adminSuccess" class="form-success" style="display:none;"></p>
+
+    <!-- ===== STATS ===== -->
+    <div class="stat-grid" id="statGrid">
+        <div class="stat-card"><div class="stat-value" id="statUsers">–</div><div class="stat-label">Users</div></div>
+        <div class="stat-card"><div class="stat-value" id="statProducts">–</div><div class="stat-label">Products</div></div>
+        <div class="stat-card"><div class="stat-value" id="statOrders">–</div><div class="stat-label">Orders</div></div>
+        <div class="stat-card"><div class="stat-value" id="statRevenue">–</div><div class="stat-label">Revenue</div></div>
+    </div>
+
+    <!-- ===== TABS ===== -->
+    <div class="admin-tabs">
+        <button class="admin-tab-btn active" data-tab="products">Products</button>
+        <button class="admin-tab-btn" data-tab="orders">Orders</button>
+        <button class="admin-tab-btn" data-tab="users">Users</button>
+    </div>
+
+    <!-- ===== PRODUCTS PANEL ===== -->
+    <div class="admin-panel active" id="panel-products">
+
+        <form class="admin-product-form" id="productForm">
+            <input type="hidden" id="productId">
+            <input type="text" id="pName" placeholder="Product name" required>
+            <input type="text" id="pCategory" placeholder="Category (e.g. Jewelry)" required>
+            <input type="number" id="pPrice" placeholder="Price" step="0.01" min="0" required>
+            <input type="number" id="pStock" placeholder="Stock" min="0" value="0">
+            <input type="text" id="pImage" placeholder="Image URL">
+            <textarea id="pDescription" placeholder="Description"></textarea>
+            <button type="submit" class="btn-primary" id="productSubmitBtn">Add Product</button>
+        </form>
+
+        <div id="productsTableWrap">
+            <p class="admin-loading">Loading products...</p>
+        </div>
+    </div>
+
+    <!-- ===== ORDERS PANEL ===== -->
+    <div class="admin-panel" id="panel-orders">
+        <div id="ordersTableWrap">
+            <p class="admin-loading">Loading orders...</p>
+        </div>
+    </div>
+
+    <!-- ===== USERS PANEL ===== -->
+    <div class="admin-panel" id="panel-users">
+        <div id="usersTableWrap">
+            <p class="admin-loading">Loading users...</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

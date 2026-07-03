@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In | mayaboti</title>
+    <link rel="stylesheet" href="styl.css">
+</head>
+<body>
+
+<nav class="main-nav">
+    <a href="index.html">HOME</a>
+    <a href="band.html">BRANDS</a>
+    <a href="categories.html">CATEGORIES</a>
+    <a href="cart.html">CART</a>
+    <a href="chat.html">CHAT</a>
+</nav>
+
+<!-- ===================== SIGN IN ===================== -->
+
+<div class="auth-wrap">
+
+    <div class="auth-brand">
+        <div class="mark">mayaboti | মায়াবতী</div>
+
+        <blockquote>
+            "Good taste is quiet — it just shows up in what you keep."
+            <cite>Welcome back to your account</cite>
+        </blockquote>
+    </div>
+
+    <div class="auth-form">
+
+        <h1>Sign In</h1>
+
+        <p class="sub">
+            Enter your details to access your account
+        </p>
+
+        <p id="loginError" class="form-error" style="display:none;"></p>
+
+        <form id="loginForm">
+
+            <div class="field">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email"
+                placeholder="you@example.com" required>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password"
+                name="password"
+                placeholder="••••••••"
+                required>
+            </div>
+
+            <div class="row-between">
+
+                <label class="remember">
+                    <input type="checkbox">
+                    Remember me
+                </label>
+
+                <a href="#">Forgot password?</a>
+
+            </div>
+
+            <button type="submit" class="btn-primary" id="loginBtn">
+                SIGN IN
+            </button>
+
+        </form>
+
+        <div class="divider">OR</div>
+
+        <button type="button" class="btn-secondary">
+            Continue with Google
+        </button>
+
+        <p class="signup-note">
+            Don't have an account?
+            <a href="create_on.html">Create one</a>
+        </p>
+
+    </div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="styl.js"></script>
+<script>
+    // Redirect already-logged-in users straight to the homepage
+    if (Auth.isLoggedIn()) {
+        window.location.href = "index.html";
+    }
+
+    const loginForm = document.getElementById("loginForm");
+    const loginError = document.getElementById("loginError");
+    const loginBtn = document.getElementById("loginBtn");
+
+    loginForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        loginError.style.display = "none";
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Signing in...";
+
+        try {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const data = await Auth.apiFetch("/auth/login", {
+                method: "POST",
+                body: JSON.stringify({ email, password }),
+            });
+
+            Auth.saveSession(data.token, data.user);
+
+            // Send admins to the dashboard, everyone else to the homepage
+            window.location.href = data.user.role === "admin" ? "admin.html" : "index.html";
+        } catch (err) {
+            loginError.textContent = err.message || "Login failed. Please try again.";
+            loginError.style.display = "block";
+        } finally {
+            loginBtn.disabled = false;
+            loginBtn.textContent = "SIGN IN";
+        }
+    });
+</script>
+
+</body>
+</html>

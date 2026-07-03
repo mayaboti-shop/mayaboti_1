@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | mayaboti | মায়াবতী</title>
+    <link rel="stylesheet" href="styl.css">
+</head>
+
+<body>
+
+<nav class="main-nav">
+    <a href="index.html">HOME</a>
+    <a href="band.html">BRANDS</a>
+    <a href="categories.html">CATEGORIES</a>
+    <a href="cart.html">CART</a>
+    <a href="chat.html">CHAT</a>
+</nav>
+
+<!-- ===================== SIGN UP ===================== -->
+
+<div class="auth-wrap">
+
+    <div class="auth-brand">
+
+        <div class="mark">mayaboti | মায়াবতী</div>
+
+        <ul class="perks">
+
+            <li>
+                <span class="dot"></span>
+
+                <div>
+                    Order tracking, in one place
+                    <span class="sub">
+                        Follow every delivery from checkout to doorstep.
+                    </span>
+                </div>
+            </li>
+
+            <li>
+                <span class="dot"></span>
+
+                <div>
+                    Faster checkout next time
+                    <span class="sub">
+                        Save addresses and cards for one-click orders.
+                    </span>
+                </div>
+            </li>
+
+            <li>
+                <span class="dot"></span>
+
+                <div>
+                    Early access to drops
+                    <span class="sub">
+                        New arrivals and members-only pricing.
+                    </span>
+                </div>
+            </li>
+
+        </ul>
+
+        <blockquote>
+            Join thousands of customers shopping smarter.
+        </blockquote>
+
+    </div>
+
+    <div class="auth-form">
+
+        <h1>Create your account</h1>
+
+        <p class="sub">
+            It only takes a minute.
+        </p>
+
+        <p id="signupError" class="form-error" style="display:none;"></p>
+
+        <form id="signupForm">
+
+            <div class="field-row">
+
+                <div class="field">
+                    <label for="fname">First Name</label>
+
+                    <input
+                        type="text"
+                        id="fname"
+                        name="fname"
+                        placeholder="Fahim"
+                        autocomplete="given-name"
+                        required>
+                </div>
+
+                <div class="field">
+                    <label for="lname">Last Name</label>
+
+                    <input
+                        type="text"
+                        id="lname"
+                        name="lname"
+                        placeholder="Abrar"
+                        autocomplete="family-name"
+                        required>
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label for="email">Email Address</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="fahim.abrar@example.com"
+                    autocomplete="email"
+                    required>
+
+            </div>
+
+            <div class="field">
+
+                <label for="phone">Phone Number</label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="01XXXXXXXXX"
+                    autocomplete="tel"
+                    required>
+
+                <div class="hint">
+                    Used for order updates and delivery notifications.
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label for="password">Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    placeholder="••••••••"
+                    required>
+
+                <div class="hint">
+                    Use at least 8 characters, including a number and a symbol.
+                </div>
+
+            </div>
+
+            <div class="field">
+
+                <label for="confirm">Confirm Password</label>
+
+                <input
+                    type="password"
+                    id="confirm"
+                    name="confirm"
+                    minlength="8"
+                    autocomplete="new-password"
+                    placeholder="••••••••"
+                    required>
+
+            </div>
+
+            <label class="terms">
+
+                <input type="checkbox" required>
+
+                <span>
+                    I agree to the
+                    <a href="#">Terms of Service</a>
+                    and
+                    <a href="#">Privacy Policy</a>.
+                </span>
+
+            </label>
+
+            <button type="submit" class="btn-primary" id="signupBtn">
+                CREATE ACCOUNT
+            </button>
+
+        </form>
+
+        <div class="divider">
+            OR
+        </div>
+
+        <button type="button" class="btn-secondary">
+            Continue with Google
+        </button>
+
+        <p class="login-note">
+            Already have an account?
+            <a href="login.html">Sign In</a>
+        </p>
+
+    </div>
+
+</div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="styl.js"></script>
+<script>
+    const signupForm = document.getElementById("signupForm");
+    const signupError = document.getElementById("signupError");
+    const signupBtn = document.getElementById("signupBtn");
+
+    signupForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        signupError.style.display = "none";
+
+        const password = document.getElementById("password").value;
+        const confirm = document.getElementById("confirm").value;
+
+        if (password !== confirm) {
+            signupError.textContent = "Passwords do not match.";
+            signupError.style.display = "block";
+            return;
+        }
+
+        signupBtn.disabled = true;
+        signupBtn.textContent = "Creating account...";
+
+        try {
+            const payload = {
+                fname: document.getElementById("fname").value,
+                lname: document.getElementById("lname").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                password: password,
+            };
+
+            const data = await Auth.apiFetch("/auth/register", {
+                method: "POST",
+                body: JSON.stringify(payload),
+            });
+
+            Auth.saveSession(data.token, data.user);
+            window.location.href = "index.html";
+        } catch (err) {
+            signupError.textContent = err.message || "Sign up failed. Please try again.";
+            signupError.style.display = "block";
+        } finally {
+            signupBtn.disabled = false;
+            signupBtn.textContent = "CREATE ACCOUNT";
+        }
+    });
+</script>
+
+</body>
+</html>
