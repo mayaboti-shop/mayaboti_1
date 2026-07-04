@@ -232,3 +232,72 @@ document.querySelectorAll(".remove").forEach(btn => {
     };
 
 });
+document.addEventListener("DOMContentLoaded", () => {
+
+    const cartError = document.getElementById("cartError");
+    const cartSuccess = document.getElementById("cartSuccess");
+    const checkoutBtn = document.getElementById("checkoutBtn");
+
+    function showError(msg) {
+        cartSuccess.hidden = true;
+        cartError.textContent = msg;
+        cartError.hidden = false;
+    }
+
+    function showSuccess(msg) {
+        cartError.hidden = true;
+        cartSuccess.textContent = msg;
+        cartSuccess.hidden = false;
+    }
+
+    function getCartItems() {
+        return [...document.querySelectorAll(".cart-item")].map(item => ({
+            name: item.querySelector("h3").textContent,
+            price: Number(item.dataset.price),
+            qty: Number(item.querySelector(".count").textContent)
+        }));
+    }
+
+    checkoutBtn.addEventListener("click", async () => {
+
+        cartError.hidden = true;
+        cartSuccess.hidden = true;
+
+        if (!Auth.isLoggedIn()) {
+            location.href = "login.html";
+            return;
+        }
+
+        const items = getCartItems();
+
+        if (!items.length) {
+            showError("Your cart is empty.");
+            return;
+        }
+
+        checkoutBtn.disabled = true;
+        checkoutBtn.textContent = "Placing order...";
+
+        try {
+
+            await Auth.apiFetch("/orders", {
+                method: "POST",
+                body: JSON.stringify({ items })
+            });
+
+            showSuccess("Order placed successfully!");
+
+        } catch (err) {
+
+            showError(err.message || "Checkout failed.");
+
+        } finally {
+
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = "Proceed to Checkout";
+
+        }
+
+    });
+
+});
